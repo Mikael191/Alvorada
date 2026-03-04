@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Copy, CheckCircle2, Menu, X, Instagram, User } from "lucide-react";
+import { Copy, CheckCircle2, Menu, X, Instagram, User, LogOut } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
+import { useSession, signOut } from "next-auth/react";
 import MagneticButton from "./ui/MagneticButton";
 import { cn } from "@/lib/utils";
 
@@ -16,8 +17,10 @@ const NAV_LINKS = [
 ];
 
 export function Header() {
+    const { data: session, status } = useSession();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [hidden, setHidden] = useState(false);
     const { scrollY } = useScroll();
 
@@ -91,15 +94,59 @@ export function Header() {
                                 Falar no Instagram
                             </a>
                         </MagneticButton>
-                        <MagneticButton strength={0.2}>
-                            <a
-                                href="/login"
-                                className="flex items-center justify-center p-2.5 rounded-full border border-ink/20 text-ink transition-all hover:bg-ink hover:text-paper cursor-pointer"
-                                aria-label="Login ou Cadastro"
-                            >
-                                <User className="w-5 h-5" />
-                            </a>
-                        </MagneticButton>
+                        <div className="relative">
+                            <MagneticButton strength={0.2}>
+                                {status === "authenticated" && session.user ? (
+                                    <button
+                                        onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                        className="flex items-center justify-center p-2.5 rounded-full border border-ink bg-ink text-paper hover:bg-ink/90 transition-all cursor-pointer"
+                                        aria-label="Perfil do Usuário"
+                                    >
+                                        <User className="w-5 h-5" />
+                                    </button>
+                                ) : (
+                                    <a
+                                        href="/login"
+                                        className="flex items-center justify-center p-2.5 rounded-full border border-ink/20 text-ink transition-all hover:bg-ink hover:text-paper cursor-pointer"
+                                        aria-label="Login ou Cadastro"
+                                    >
+                                        <User className="w-5 h-5" />
+                                    </a>
+                                )}
+                            </MagneticButton>
+
+                            {/* User Profile Dropdown */}
+                            <AnimatePresence>
+                                {isProfileOpen && status === "authenticated" && session.user && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute right-0 top-full mt-2 w-64 bg-paper border border-ink/10 shadow-xl overflow-hidden z-50 rounded"
+                                    >
+                                        <div className="p-4 border-b border-ink/10 bg-ink/5">
+                                            <p className="font-bold text-ink truncate">{session.user.name}</p>
+                                            {session.user.room && (
+                                                <p className="text-sm text-stone truncate">Sala: {session.user.room}</p>
+                                            )}
+                                        </div>
+                                        <div className="p-2">
+                                            <button
+                                                onClick={() => {
+                                                    signOut({ callbackUrl: '/' });
+                                                    setIsProfileOpen(false);
+                                                }}
+                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 font-bold hover:bg-red-50 rounded transition-colors"
+                                            >
+                                                <LogOut className="w-4 h-4" />
+                                                Sair / Desconectar
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
                 </nav>
 
@@ -156,13 +203,37 @@ export function Header() {
                             </ul>
 
                             <div className="mt-12 flex flex-col gap-4">
-                                <a
-                                    href="/login"
-                                    className="flex items-center justify-center gap-3 w-full text-center text-sm font-semibold uppercase tracking-wider border border-ink text-ink px-5 py-4 rounded hover:bg-ink/5 transition-colors duration-300"
-                                >
-                                    <User className="w-5 h-5" />
-                                    Entrar / Cadastro
-                                </a>
+                                {status === "authenticated" && session.user ? (
+                                    <div className="flex flex-col gap-4">
+                                        <div className="flex flex-col items-center justify-center p-4 bg-ink/5 border border-ink/10 rounded">
+                                            <div className="bg-ink text-paper p-3 rounded-full mb-3">
+                                                <User className="w-6 h-6" />
+                                            </div>
+                                            <p className="font-bold text-ink text-center">{session.user.name}</p>
+                                            {session.user.room && (
+                                                <p className="text-sm text-stone text-center mb-4">Sala: {session.user.room}</p>
+                                            )}
+                                            <button
+                                                onClick={() => {
+                                                    signOut({ callbackUrl: '/' });
+                                                    setIsMenuOpen(false);
+                                                }}
+                                                className="flex items-center justify-center gap-2 w-full text-center text-sm font-bold uppercase tracking-wider bg-red-50 text-red-600 border border-red-200 px-5 py-3 rounded hover:bg-red-100 transition-colors duration-300"
+                                            >
+                                                <LogOut className="w-4 h-4" />
+                                                Sair / Desconectar
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <a
+                                        href="/login"
+                                        className="flex items-center justify-center gap-3 w-full text-center text-sm font-semibold uppercase tracking-wider border border-ink text-ink px-5 py-4 rounded hover:bg-ink/5 transition-colors duration-300"
+                                    >
+                                        <User className="w-5 h-5" />
+                                        Entrar / Cadastro
+                                    </a>
+                                )}
                                 <a
                                     href="https://instagram.com/gremioalvorada"
                                     target="_blank"

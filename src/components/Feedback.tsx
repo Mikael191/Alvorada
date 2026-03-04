@@ -31,7 +31,7 @@ export function Feedback() {
                 title: `${formData.type.toUpperCase()} - ${new Date().toLocaleDateString("pt-BR")}`,
                 content: formData.message,
                 type: mappedType,
-                isAnonymous: true
+                isAnonymous: false
             };
 
             const res = await fetch("/api/suggestions", {
