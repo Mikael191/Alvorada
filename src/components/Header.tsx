@@ -168,7 +168,7 @@ export function Header() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-40 md:hidden"
+                            className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-40 md:hidden pointer-events-auto"
                             onClick={() => setIsMenuOpen(false)}
                         />
                         <motion.div
@@ -176,7 +176,7 @@ export function Header() {
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-                            className="fixed inset-y-0 right-0 w-[80%] max-w-sm bg-paper z-50 p-6 shadow-2xl md:hidden overflow-y-auto"
+                            className="fixed inset-y-0 right-0 w-[80%] max-w-sm bg-paper z-50 p-6 shadow-2xl md:hidden overflow-y-auto pointer-events-auto"
                         >
                             <div className="flex justify-end mb-8">
                                 <button
