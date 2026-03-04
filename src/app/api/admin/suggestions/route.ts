@@ -52,7 +52,7 @@ export async function PATCH(req: Request) {
         return NextResponse.json(updatedSuggestion);
     } catch (error) {
         if (error instanceof z.ZodError) {
-            return NextResponse.json({ error: error.errors }, { status: 400 });
+            return NextResponse.json({ error: error.issues }, { status: 400 });
         }
         console.error("Failed to update suggestion:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
