@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import ptBR from "date-fns/locale/pt-BR";
+import { ptBR } from "date-fns/locale/pt-BR";
 import { Loader2 } from "lucide-react";
 
 export default function AdminDashboardClient({ initialData }: { initialData: any[] }) {
