@@ -13,7 +13,6 @@ export default function LoginPage() {
 
     const [formData, setFormData] = useState({
         name: "",
-        room: "",
         password: "",
     });
 
@@ -25,7 +24,6 @@ export default function LoginPage() {
         try {
             const res = await signIn("credentials", {
                 name: formData.name,
-                room: formData.room,
                 password: formData.password,
                 redirect: false,
             });
@@ -69,17 +67,7 @@ export default function LoginPage() {
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-bold uppercase tracking-wider text-stone">Turma / Sala</label>
-                        <input
-                            type="text"
-                            required
-                            placeholder="Ex: 3º Ano A"
-                            className="w-full bg-paper border border-ink/20 p-4 focus:outline-none focus:border-ink transition-colors"
-                            value={formData.room}
-                            onChange={(e) => setFormData({ ...formData, room: e.target.value })}
-                        />
-                    </div>
+
 
                     <div className="space-y-2">
                         <label className="text-sm font-bold uppercase tracking-wider text-stone">Senha</label>

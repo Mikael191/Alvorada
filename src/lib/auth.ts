@@ -37,38 +37,42 @@ export const authOptions: AuthOptions = {
             name: "Gremio Alvorada",
             credentials: {
                 name: { label: "Nome Completo", type: "text", placeholder: "Seu nome completo" },
-                room: { label: "Sala", type: "text", placeholder: "Sua sala (ex: 3º Ano A)" },
                 password: { label: "Senha", type: "password" },
             },
             async authorize(credentials) {
-                if (!credentials?.name || !credentials?.room || !credentials?.password) {
+                if (!credentials?.name || !credentials?.password) {
                     throw new Error("Credenciais incompletas.");
                 }
 
-                const user = await prisma.user.findUnique({
+                const users = await prisma.user.findMany({
                     where: {
-                        name_room: {
-                            name: credentials.name,
-                            room: credentials.room,
-                        },
+                        name: credentials.name,
                     },
                 });
 
-                if (!user) {
+                if (users.length === 0) {
                     throw new Error("Usuário não encontrado.");
                 }
 
-                const isValidPassword = await bcrypt.compare(credentials.password, user.password);
+                // Check passwords for all users with this name
+                let validUser = null;
+                for (const user of users) {
+                    const isValidPassword = await bcrypt.compare(credentials.password, user.password);
+                    if (isValidPassword) {
+                        validUser = user;
+                        break;
+                    }
+                }
 
-                if (!isValidPassword) {
+                if (!validUser) {
                     throw new Error("Senha incorreta.");
                 }
 
                 return {
-                    id: user.id,
-                    name: user.name,
-                    room: user.room,
-                    role: user.role,
+                    id: validUser.id,
+                    name: validUser.name,
+                    room: validUser.room,
+                    role: validUser.role,
                 };
             },
         }),
