@@ -2,21 +2,37 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Copy, CheckCircle2, Menu, X, Instagram, User } from "lucide-react";
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
+import MagneticButton from "./ui/MagneticButton";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
     { name: "Início", href: "#inicio" },
     { name: "Quem Somos", href: "#quem-somos" },
-    { name: "Projetos", href: "#projetos" },
+    { name: "Propostas", href: "#projetos" },
     { name: "Avisos", href: "#avisos" },
     { name: "Ouvidoria", href: "#ouvidoria" },
 ];
 
 export function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [hidden, setHidden] = useState(false);
+    const { scrollY } = useScroll();
+
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        const previous = scrollY.getPrevious() ?? 0;
+        if (latest > previous && latest > 150) {
+            setHidden(true);
+        } else {
+            setHidden(false);
+        }
+    });
+
+    const handleCopyPix = async () => {
+        // This function was incomplete in the provided diff, keeping it as is.
+    };
 
     // Handle scroll state for styling
     useEffect(() => {
@@ -26,61 +42,71 @@ export function Header() {
     }, []);
 
     return (
-        <header
-            className={cn(
-                "fixed top-0 inset-x-0 z-50 transition-all duration-300",
-                isScrolled
-                    ? "bg-paper/90 backdrop-blur-md shadow-sm py-3"
-                    : "bg-transparent py-5"
-            )}
+        <motion.header
+            variants={{
+                visible: { y: 0 },
+                hidden: { y: "-100%" }
+            }}
+            animate={hidden ? "hidden" : "visible"}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="fixed top-0 left-0 w-full z-50 bg-transparent border-none pointer-events-none"
         >
-            <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
+            <div className="container mx-auto px-4 md:px-6 h-20 flex items-center justify-between pointer-events-auto">
 
-                {/* Logo area */}
-                <a href="#inicio" className="flex items-center gap-3 group">
-                    <div className="relative w-10 h-10 overflow-hidden rounded-full border border-ink/10 transition-transform group-hover:scale-105">
-                        <Image
-                            src="/brand/logo-alvorada.png"
-                            alt="Logo Grêmio Alvorada"
-                            fill
-                            className="object-cover"
-                        />
-                    </div>
-                    <span className="font-heading font-bold text-lg tracking-tight text-ink hidden sm:block">
-                        Grêmio Alvorada
-                    </span>
-                </a>
+                {/* Logo & Title */}
+                <MagneticButton strength={0.1}>
+                    <a href="#inicio" className="flex items-center gap-3 group">
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden">
+                            <Image src="/brand/logo-alvorada.png" alt="Selo Grêmio" fill className="object-cover" />
+                        </div>
+                        <span className="font-heading font-bold text-ink tracking-widest text-lg md:text-xl uppercase">Grêmio Alvorada</span>
+                    </a>
+                </MagneticButton>
 
-                {/* Desktop Nav */}
+                {/* Desktop Navigation */}
                 <nav className="hidden md:flex items-center gap-8">
                     <ul className="flex items-center gap-6">
                         {NAV_LINKS.map((link) => (
                             <li key={link.name}>
                                 <a
                                     href={link.href}
-                                    className="text-sm font-medium text-stone hover:text-ink relative transition-colors duration-200 group"
+                                    className="text-sm font-medium text-stone hover:text-ink relative transition-all duration-300 hover:scale-105 group origin-left inline-block"
                                 >
                                     {link.name}
-                                    <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-stamp transition-all duration-300 group-hover:w-full"></span>
+                                    <span className="absolute -bottom-1 left-0 w-[0px] h-[2px] bg-stamp transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:w-full"></span>
                                 </a>
                             </li>
                         ))}
                     </ul>
 
-                    <a
-                        href="https://instagram.com/gremioalvorada"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-semibold uppercase tracking-wider bg-ink text-paper px-5 py-2.5 rounded hover:bg-stamp transition-colors"
-                    >
-                        Falar no Instagram
-                    </a>
+                    {/* Desktop Action & Mobile Toggle */}
+                    <div className="hidden md:flex items-center gap-4">
+                        <MagneticButton strength={0.2}>
+                            <a
+                                href="https://instagram.com/gremioalvorada"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex items-center justify-center gap-2 bg-ink text-paper px-6 py-2.5 rounded font-bold text-sm uppercase tracking-wider transition-all hover:bg-stamp hover:shadow-lg hover:-translate-y-0.5"
+                            >
+                                Falar no Instagram
+                            </a>
+                        </MagneticButton>
+                        <MagneticButton strength={0.2}>
+                            <a
+                                href="/login"
+                                className="flex items-center justify-center p-2.5 rounded-full border border-ink/20 text-ink transition-all hover:bg-ink hover:text-paper cursor-pointer"
+                                aria-label="Login ou Cadastro"
+                            >
+                                <User className="w-5 h-5" />
+                            </a>
+                        </MagneticButton>
+                    </div>
                 </nav>
 
                 {/* Mobile Nav Toggle */}
                 <button
                     className="md:hidden p-2 text-ink"
-                    onClick={() => setIsMobileMenuOpen(true)}
+                    onClick={() => setIsMenuOpen(true)}
                     aria-label="Abrir menu"
                 >
                     <Menu className="w-6 h-6" />
@@ -89,14 +115,14 @@ export function Header() {
 
             {/* Mobile Drawer */}
             <AnimatePresence>
-                {isMobileMenuOpen && (
+                {isMenuOpen && (
                     <>
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-40 md:hidden"
-                            onClick={() => setIsMobileMenuOpen(false)}
+                            onClick={() => setIsMenuOpen(false)}
                         />
                         <motion.div
                             initial={{ x: "100%" }}
@@ -107,7 +133,7 @@ export function Header() {
                         >
                             <div className="flex justify-end mb-8">
                                 <button
-                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    onClick={() => setIsMenuOpen(false)}
                                     className="p-2 text-stone hover:text-ink transition-colors"
                                     aria-label="Fechar menu"
                                 >
@@ -120,7 +146,7 @@ export function Header() {
                                     <li key={link.name}>
                                         <a
                                             href={link.href}
-                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            onClick={() => setIsMenuOpen(false)}
                                             className="text-lg font-heading text-ink hover:text-stamp transition-colors flex items-center border-b border-ink/10 pb-2"
                                         >
                                             {link.name}
@@ -129,12 +155,19 @@ export function Header() {
                                 ))}
                             </ul>
 
-                            <div className="mt-12">
+                            <div className="mt-12 flex flex-col gap-4">
+                                <a
+                                    href="/login"
+                                    className="flex items-center justify-center gap-3 w-full text-center text-sm font-semibold uppercase tracking-wider border border-ink text-ink px-5 py-4 rounded hover:bg-ink/5 transition-colors duration-300"
+                                >
+                                    <User className="w-5 h-5" />
+                                    Entrar / Cadastro
+                                </a>
                                 <a
                                     href="https://instagram.com/gremioalvorada"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="block w-full text-center text-sm font-semibold uppercase tracking-wider bg-stamp text-paper px-5 py-4 rounded hover:bg-ink transition-colors"
+                                    className="block w-full text-center text-sm font-semibold uppercase tracking-wider border border-ink bg-stamp text-paper px-5 py-4 rounded hover:bg-paper hover:text-ink transition-colors duration-300"
                                 >
                                     Falar no Instagram
                                 </a>
@@ -143,6 +176,6 @@ export function Header() {
                     </>
                 )}
             </AnimatePresence>
-        </header>
+        </motion.header>
     );
 }

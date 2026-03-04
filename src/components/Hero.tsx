@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, MessageSquare } from "lucide-react";
 import { DragonSumiE } from "./DragonSumiE";
+import MagneticButton from "./ui/MagneticButton";
 
 export function Hero() {
     const { scrollY } = useScroll();
@@ -24,14 +25,36 @@ export function Hero() {
                     {/* Text Content */}
                     <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left">
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            initial="hidden"
+                            animate="visible"
+                            variants={{
+                                hidden: { opacity: 0 },
+                                visible: {
+                                    opacity: 1,
+                                    transition: { staggerChildren: 0.1, delayChildren: 0.1 }
+                                }
+                            }}
+                            className="mb-6"
                         >
-                            <h1 className="font-heading text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-ink mb-6">
-                                Construindo a<br />
-                                <span className="text-stamp">Força</span> da Nossa<br />
-                                Escola
+                            <h1 className="font-heading text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-ink flex flex-wrap max-w-lg lg:max-w-none justify-center lg:justify-start">
+                                {["Construindo", "a", "For\u00e7a", "da", "Nossa", "Escola"].map((word, i) => (
+                                    <span key={i} className="overflow-hidden inline-block mr-3 mb-2 last:mr-0">
+                                        <motion.span
+                                            variants={{
+                                                hidden: { y: "150%", opacity: 0, rotateZ: 5 },
+                                                visible: {
+                                                    y: 0,
+                                                    opacity: 1,
+                                                    rotateZ: 0,
+                                                    transition: { ease: [0.76, 0, 0.24, 1], duration: 0.8 }
+                                                }
+                                            }}
+                                            className={`inline-block origin-bottom-left ${word === "For\u00e7a" ? "text-stamp" : ""}`}
+                                        >
+                                            {word}
+                                        </motion.span>
+                                    </span>
+                                ))}
                             </h1>
                         </motion.div>
 
@@ -47,23 +70,28 @@ export function Hero() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
-                            className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+                            transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
+                            className="flex flex-col sm:flex-row items-center gap-6 w-full sm:w-auto"
                         >
-                            <a
-                                href="#projetos"
-                                className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-stamp text-paper px-8 py-3.5 rounded font-semibold transition-all hover:bg-ink hover:-translate-y-1 shadow-md"
-                            >
-                                Ver Projetos
-                                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                            </a>
-                            <a
-                                href="#ouvidoria"
-                                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-transparent text-ink border-2 border-ink/20 px-8 py-3 rounded font-semibold transition-all hover:border-ink hover:bg-ink/5"
-                            >
-                                <MessageSquare className="w-4 h-4" />
-                                Enviar Sugestão
-                            </a>
+                            <MagneticButton strength={0.3}>
+                                <a
+                                    href="#projetos"
+                                    className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-stamp text-paper px-8 py-3.5 rounded font-semibold transition-all hover:bg-ink hover:-translate-y-1 shadow-md"
+                                >
+                                    Ver Propostas
+                                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                                </a>
+                            </MagneticButton>
+
+                            <MagneticButton strength={0.2}>
+                                <a
+                                    href="#ouvidoria"
+                                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-transparent text-ink border-2 border-ink/20 px-8 py-3 rounded font-semibold transition-all hover:border-ink hover:bg-ink/5"
+                                >
+                                    <MessageSquare className="w-4 h-4" />
+                                    Enviar Sugestão
+                                </a>
+                            </MagneticButton>
                         </motion.div>
                     </div>
 

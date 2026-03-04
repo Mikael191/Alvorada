@@ -19,7 +19,7 @@ export function About() {
                             initial={{ opacity: 0, x: -30 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true, margin: "-100px" }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
                         >
                             <h2 className="text-sm font-bold tracking-widest text-stamp uppercase mb-2">Quem Somos</h2>
                             <h3 className="font-heading text-4xl lg:text-5xl text-ink font-bold mb-8 leading-tight">
@@ -32,13 +32,6 @@ export function About() {
                                 Lutamos para que cada aluno tenha espaço para se expressar, descobrir talentos e contribuir para melhorias reais nos espaços que ocupamos todos os dias.
                             </p>
 
-                            <div className="flex items-center gap-6">
-                                <BrandSeal size={70} variant="solid" />
-                                <div className="flex flex-col">
-                                    <span className="font-heading font-bold text-ink">Gestão 2026</span>
-                                    <span className="text-sm text-stone italic">"Juntos pelo Alvorada"</span>
-                                </div>
-                            </div>
                         </motion.div>
                     </div>
 
@@ -49,7 +42,7 @@ export function About() {
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-100px" }}
-                            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+                            transition={{ duration: 1.0, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
                             className="bg-paper p-8 border-l-4 border-ink shadow-sm relative overflow-hidden group"
                         >
                             <div className="absolute top-0 right-0 w-16 h-16 bg-ink/5 rounded-bl-full group-hover:scale-110 transition-transform duration-500" />
@@ -65,7 +58,7 @@ export function About() {
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, margin: "-100px" }}
-                                transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
+                                transition={{ duration: 1.0, ease: [0.76, 0, 0.24, 1], delay: 0.4 }}
                                 className="bg-paper p-8 border-t-4 border-stamp shadow-sm relative overflow-hidden group"
                             >
                                 <div className="absolute top-0 right-0 w-16 h-16 bg-stamp/5 rounded-bl-full group-hover:scale-110 transition-transform duration-500" />
@@ -79,7 +72,7 @@ export function About() {
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, margin: "-100px" }}
-                                transition={{ duration: 0.6, ease: "easeOut", delay: 0.6 }}
+                                transition={{ duration: 1.0, ease: [0.76, 0, 0.24, 1], delay: 0.6 }}
                                 className="bg-ink p-8 text-paper shadow-md relative overflow-hidden group"
                             >
                                 <div className="absolute -right-8 -bottom-8 opacity-10 blur-[1px]">
@@ -95,21 +88,16 @@ export function About() {
                     </div>
                 </div>
 
-                {/* Info Blocks Bottom */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-50px" }}
-                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
+                    transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0.3 }}
                     className="mt-20 pt-10 border-t border-ink/10 flex flex-col sm:flex-row gap-10"
                 >
-                    <div className="flex-1">
+                    <div className="flex-1 lg:w-2/3 mx-auto text-center md:text-left">
                         <h5 className="font-bold text-ink mb-2">Nossa Missão</h5>
-                        <p className="text-stone text-sm">Integrar os estudantes da instituição, fomentando um ambiente escolar crítico, acolhedor e dinâmico, onde todo aluno tenha voz ativa no seu processo formativo.</p>
-                    </div>
-                    <div className="flex-1">
-                        <h5 className="font-bold text-ink mb-2">Como Participar</h5>
-                        <p className="text-stone text-sm">O grêmio é de todos. Participe das reuniões abertas mensais, inscreva-se como voluntário em nossos eventos ou use a ouvidoria para enviar ideias. Construímos juntos.</p>
+                        <p className="text-stone text-sm max-w-3xl">Integrar os estudantes da instituição, fomentando um ambiente escolar crítico, acolhedor e dinâmico, onde todo aluno tenha voz ativa no seu processo formativo.</p>
                     </div>
                 </motion.div>
             </div>

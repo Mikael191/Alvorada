@@ -4,40 +4,7 @@ import { motion } from "framer-motion";
 import { Bell, AlertCircle, CalendarDays, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const NOTICES = [
-    {
-        id: 1,
-        title: "Inscrições abertas para o Campeonato Interclasse de Futsal",
-        date: "Atualizado há 2 dias",
-        type: "evento",
-        content: "Atenção representantes de turma! As planilhas de inscrição já estão disponíveis na sala do grêmio (Bloco C). O prazo máximo para entrega das equipes formadas é até a próxima sexta-feira, dia 12. Não deixem para a última hora!",
-        featured: true,
-    },
-    {
-        id: 2,
-        title: "Reunião de Representantes",
-        date: "14 de Março",
-        type: "reuniao",
-        content: "Pauta: Calendário de provas bimestrais e feedback sobre a nova estrutura da cantina.",
-        featured: false,
-    },
-    {
-        id: 3,
-        title: "Manutenção dos Bebedouros",
-        date: "10 de Março",
-        type: "urgente",
-        content: "Os bebedouros do Bloco B entrarão em manutenção nesta quarta-feira. Usem os bebedouros do Bloco A.",
-        featured: false,
-    },
-    {
-        id: 4,
-        title: "Edital: Voluntários para a Biblioteca",
-        date: "05 de Março",
-        type: "geral",
-        content: "A biblioteca está buscando 4 alunos voluntários para ajudar na catalogação de novos livros no contraturno.",
-        featured: false,
-    }
-];
+const NOTICES: any[] = [];
 
 const TypeIcon = ({ type }: { type: string }) => {
     switch (type) {
@@ -81,83 +48,25 @@ export function Notices() {
 
                 <div className="flex flex-col lg:flex-row gap-8 items-start">
 
-                    {/* Featured Notice */}
-                    {featuredNotice && (
+                    <div className="flex justify-center items-center w-full min-h-[400px]">
                         <motion.div
-                            initial={{ opacity: 0, x: -30 }}
-                            whileInView={{ opacity: 1, x: 0 }}
+                            initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+                            whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                             viewport={{ once: true, margin: "-50px" }}
-                            className="w-full lg:w-1/2"
+                            transition={{ duration: 1.5, ease: [0.76, 0, 0.24, 1] }}
+                            className="relative bg-paper w-full max-w-3xl p-12 md:p-20 flex flex-col items-center justify-center text-center group overflow-hidden border border-ink/5"
                         >
-                            <div className="relative bg-paper p-8 sm:p-12 border-2 border-ink shadow-[4px_4px_0px_0px_#141414] h-full flex flex-col justify-center">
-                                {/* Wabi Sabi detail */}
-                                <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-16 h-4 bg-stamp/20 blur-[1px] rotate-2" />
+                            {/* Wabi Sabi detail */}
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-stamp/5 rounded-bl-[100px] transition-transform duration-700 group-hover:scale-110 pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-ink/5 rounded-tr-[80px] transition-transform duration-700 group-hover:scale-110 pointer-events-none" />
 
-                                <div className="flex items-center gap-3 mb-6">
-                                    <span className="flex items-center gap-1.5 px-3 py-1 bg-ink text-paper text-xs font-bold uppercase tracking-wider rounded-sm">
-                                        <TypeIcon type={featuredNotice.type} />
-                                        {typeLabels[featuredNotice.type]}
-                                    </span>
-                                    <span className="text-sm font-medium text-stone">{featuredNotice.date}</span>
-                                </div>
-
-                                <h4 className="font-heading text-3xl sm:text-4xl font-bold text-ink mb-6 leading-tight">
-                                    {featuredNotice.title}
-                                </h4>
-
-                                <p className="text-stone text-lg leading-relaxed">
-                                    {featuredNotice.content}
-                                </p>
-
-                                <button className="mt-8 self-start border-b-2 border-ink pb-1 font-bold text-ink hover:text-stamp hover:border-stamp transition-colors uppercase tracking-wider text-sm">
-                                    Ler comunicado completo
-                                </button>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* Regular Notices List */}
-                    <div className="w-full lg:w-1/2 flex flex-col gap-4">
-                        {regularNotices.map((notice, i) => (
-                            <motion.div
-                                key={notice.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: "-50px" }}
-                                transition={{ duration: 0.5, delay: i * 0.1 }}
-                                className="group relative bg-paper/50 p-6 border-l-4 border-ink/20 hover:border-stamp hover:bg-paper transition-all cursor-pointer"
-                            >
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                                    <span className={cn(
-                                        "flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider w-fit px-2 py-0.5 rounded-sm",
-                                        notice.type === 'urgente' ? "bg-stamp text-paper" : "bg-ink/5 text-ink"
-                                    )}>
-                                        <TypeIcon type={notice.type} />
-                                        {typeLabels[notice.type]}
-                                    </span>
-                                    <span className="text-xs text-stone font-medium">{notice.date}</span>
-                                </div>
-
-                                <h5 className="font-heading text-xl font-bold text-ink mb-2 group-hover:text-stamp transition-colors">
-                                    {notice.title}
-                                </h5>
-                                <p className="text-stone text-sm leading-relaxed line-clamp-2">
-                                    {notice.content}
-                                </p>
-                            </motion.div>
-                        ))}
-
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.4 }}
-                            className="mt-4 flex justify-end"
-                        >
-                            <button className="text-sm font-bold text-ink hover:text-stamp transition-colors flex items-center gap-2">
-                                Ver todos os avisos
-                                <span className="font-serif">→</span>
-                            </button>
+                            <Bell className="w-12 h-12 text-ink/20 mb-8" />
+                            <h4 className="font-heading text-3xl sm:text-5xl font-bold text-ink mb-6 tracking-tight">
+                                Nenhum Aviso
+                            </h4>
+                            <p className="text-stone text-lg max-w-lg mx-auto leading-relaxed">
+                                O silêncio também comunica. No momento, o quadro de avisos está livre de novas atualizações.
+                            </p>
                         </motion.div>
                     </div>
 

@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum SuggestionType {
+  IDEA
+  COMPLAINT
+  PROJECT
+}
+
+enum SuggestionStatus {
+  PENDING
+  REVIEWED
+  IMPLEMENTED
+  REJECTED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String   // Full Name
+  room      String   // Class/Room (e.g., "3º Ano A")
+  password  String   // Hashed Password
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  
+  suggestions Suggestion[]
+
+  @@unique([name, room]) 
+}
+
+model Suggestion {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  type        SuggestionType
+  status      SuggestionStatus @default(PENDING)
+  isAnonymous Boolean  @default(false)
+  
+  authorId    String?
+  author      User?    @relation(fields: [authorId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

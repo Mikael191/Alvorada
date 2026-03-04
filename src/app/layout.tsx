@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Serif_JP } from "next/font/google";
+import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
+import CustomCursor from "@/components/ui/CustomCursor";
+import AuthProvider from "@/components/AuthProvider";
 
-const inter = Inter({
-  variable: "--font-inter",
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-heading",
   subsets: ["latin"],
 });
 
-const notoSerifJP = Noto_Serif_JP({
-  variable: "--font-noto-serif-jp",
+const dmSans = DM_Sans({
+  variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,9 +29,14 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body
-        className={`${inter.variable} ${notoSerifJP.variable} font-sans antialiased text-ink bg-paper min-h-screen texture-paper`}
+        className={`${bricolage.variable} ${dmSans.variable} font-sans antialiased text-ink bg-paper min-h-screen texture-paper`}
       >
-        <SmoothScroll>{children}</SmoothScroll>
+        <SmoothScroll>
+          <CustomCursor />
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </SmoothScroll>
       </body>
     </html>
   );

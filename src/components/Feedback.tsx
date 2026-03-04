@@ -5,11 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Instagram, CheckCircle2, MessageSquare, Loader2 } from "lucide-react";
 import { submitFeedback, type OuvidoriaData } from "@/actions/ouvidoria";
 import { cn } from "@/lib/utils";
+import MagneticButton from "./ui/MagneticButton";
 
 export function Feedback() {
     const [loading, setLoading] = useState(false);
     const [successStatus, setSuccessStatus] = useState<"idle" | "copied">("idle");
-    const [showIdentify, setShowIdentify] = useState(false);
 
     const [formData, setFormData] = useState<OuvidoriaData>({
         type: "sugestao",
@@ -24,23 +24,31 @@ export function Feedback() {
 
         setLoading(true);
         try {
-            // 1. Send to our Server Action (which logs it and ideally will save to DB)
-            const res = await submitFeedback(formData);
+            // Map type correctly
+            const mappedType = formData.type === "sugestao" ? "IDEA" : formData.type === "reclamacao" ? "COMPLAINT" : "PROJECT";
 
-            // 2. Format and Copy to Clipboard locally for immediately sending via Instagram DX
-            if (res.success && res.formattedText) {
-                await navigator.clipboard.writeText(res.formattedText);
+            const payload = {
+                title: `${formData.type.toUpperCase()} - ${new Date().toLocaleDateString("pt-BR")}`,
+                content: formData.message,
+                type: mappedType,
+                isAnonymous: true
+            };
+
+            const res = await fetch("/api/suggestions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                setSuccessStatus("copied");
+                setFormData({ type: "sugestao", message: "", name: "", grade: "" });
+            } else {
+                console.error("Failed to submit", await res.text());
             }
 
-            setSuccessStatus("copied");
-
-            // Reset form
-            setFormData({ type: "sugestao", message: "", name: "", grade: "" });
-            setShowIdentify(false);
-
         } catch (err) {
-            console.error("Failed to copy text or submit", err);
-            // fallback error handling
+            console.error("Failed to submit", err);
         } finally {
             setLoading(false);
         }
@@ -72,8 +80,7 @@ export function Feedback() {
                             </p>
                             <div className="p-4 border-l-2 border-stamp bg-paper/5">
                                 <p className="text-sm text-paper/80 italic">
-                                    Ao enviar, a mensagem será estruturada e copiada para a sua área de transferência para você nos enviar diretamente por DM no Instagram garantindo a comunicação!
-                                    No futuro, ela ficará arquivada em nosso painel oficial.
+                                    Todas as mensagens são enviadas de forma segura e armazenadas em nosso painel oficial. Caso não queira se identificar, você pode enviar anonimamente.
                                 </p>
                             </div>
                         </motion.div>
@@ -96,7 +103,7 @@ export function Feedback() {
                                     </label>
                                     <select
                                         id="type"
-                                        className="bg-transparent border-b-2 border-ink pb-2 text-ink text-lg font-medium outline-none focus:border-stamp transition-colors"
+                                        className="bg-transparent border-b-2 border-ink pb-2 text-ink text-lg font-medium outline-none focus:border-stamp transition-all duration-300 focus:pl-2"
                                         value={formData.type}
                                         onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                                         disabled={loading || successStatus === 'copied'}
@@ -115,7 +122,7 @@ export function Feedback() {
                                         id="message"
                                         rows={4}
                                         placeholder="Descreva aqui com detalhes..."
-                                        className="bg-transparent border-2 border-ink/20 p-4 text-ink outline-none focus:border-ink transition-colors resize-none placeholder:text-stone/50"
+                                        className="bg-transparent border-2 border-ink/20 p-4 text-ink outline-none focus:border-ink transition-all duration-300 focus:-translate-y-1 focus:shadow-md resize-none placeholder:text-stone/50"
                                         value={formData.message}
                                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                         required
@@ -123,67 +130,18 @@ export function Feedback() {
                                     />
                                 </div>
 
-                                <div className="flex items-center justify-between py-2 border-b border-ink/10">
-                                    <span className="text-sm font-bold uppercase tracking-wider text-ink">Quero me identificar</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowIdentify(!showIdentify)}
-                                        className={cn(
-                                            "relative w-12 h-6 rounded-full transition-colors duration-200 focus:outline-none",
-                                            showIdentify ? "bg-stamp" : "bg-stone"
-                                        )}
-                                        disabled={loading || successStatus === 'copied'}
-                                    >
-                                        <span className={cn(
-                                            "absolute top-1 left-1 w-4 h-4 rounded-full bg-paper transition-transform duration-200",
-                                            showIdentify ? "translate-x-6" : "translate-x-0"
-                                        )} />
-                                    </button>
-                                </div>
-
-                                <AnimatePresence>
-                                    {showIdentify && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            className="flex flex-col sm:flex-row gap-4 overflow-hidden"
-                                        >
-                                            <div className="flex-1 flex flex-col gap-1">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Seu Nome (Opcional)"
-                                                    className="bg-transparent border-b-2 border-ink/20 pb-2 text-ink outline-none focus:border-ink text-sm"
-                                                    value={formData.name}
-                                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                    disabled={loading || successStatus === 'copied'}
-                                                />
-                                            </div>
-                                            <div className="flex-1 flex flex-col gap-1">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Sua Turma (Ex: 3º B)"
-                                                    className="bg-transparent border-b-2 border-ink/20 pb-2 text-ink outline-none focus:border-ink text-sm"
-                                                    value={formData.grade}
-                                                    onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
-                                                    disabled={loading || successStatus === 'copied'}
-                                                />
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-
-                                {/* Submit / Action Button */}
                                 <div className="pt-4">
                                     {successStatus === 'idle' ? (
-                                        <button
-                                            type="submit"
-                                            className="w-full flex items-center justify-center gap-2 bg-ink text-paper py-4 font-bold uppercase tracking-wider hover:bg-stamp transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-                                            disabled={loading || !formData.message.trim()}
-                                        >
-                                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Copy className="w-5 h-5" />}
-                                            {loading ? "Processando..." : "Copiar e Prosseguir"}
-                                        </button>
+                                        <MagneticButton strength={0.05} className="w-full">
+                                            <button
+                                                type="submit"
+                                                className="w-full flex items-center justify-center gap-2 bg-ink text-paper py-4 font-bold uppercase tracking-wider hover:bg-stamp transition-transform duration-300 hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed"
+                                                disabled={loading || !formData.message.trim()}
+                                            >
+                                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <MessageSquare className="w-5 h-5" />}
+                                                {loading ? "Enviando..." : "Enviar para a Gestão"}
+                                            </button>
+                                        </MagneticButton>
                                     ) : (
                                         <motion.div
                                             initial={{ opacity: 0, y: 10 }}
@@ -192,18 +150,15 @@ export function Feedback() {
                                         >
                                             <div className="w-full flex items-center justify-center gap-2 bg-green-600/10 border-2 border-green-600 text-green-700 py-3 font-bold">
                                                 <CheckCircle2 className="w-5 h-5" />
-                                                Mensagem Copiada!
+                                                Mensagem Recebida com Sucesso!
                                             </div>
-                                            <a
-                                                href="https://ig.me/m/gremioalvorada" // Instagram Direct Message Link Schema
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="w-full flex items-center justify-center gap-2 bg-[#E1306C] text-white py-4 font-bold uppercase tracking-wider hover:brightness-110 transition-all shadow-md"
-                                                onClick={() => setTimeout(() => setSuccessStatus('idle'), 5000)}
+                                            <button
+                                                type="button"
+                                                className="text-stone underline text-sm mt-2 font-bold uppercase"
+                                                onClick={() => setSuccessStatus('idle')}
                                             >
-                                                <Instagram className="w-5 h-5" />
-                                                Abrir Instagram para Colar
-                                            </a>
+                                                Enviar Nova Mensagem
+                                            </button>
                                         </motion.div>
                                     )}
                                 </div>
